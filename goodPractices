@@ -1,0 +1,1 @@
+1) Use Object.freeze to create freeze a un object and no one can't change that object. No use string magic because they don't have a trusted sourced see https://www.linkedin.com/feed/update/urn:li:activity:7055984291180093440/
