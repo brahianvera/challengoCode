@@ -1,0 +1,147 @@
+/*
+    
+There is a group of people that work as compressor engine mechanics that need to be on call 24/7 to troubleshoot, maintain, and repair compressor station engines. If any engines fail or break down at the station, the station manager wants to immediately know who is on call to fix the problem.
+
+ 
+
+This group of mechanics is also assigned a rotation pattern, to ensure that everyone is on call for the same amount of time on average. This rotation pattern is represented by a list of numbers, where each number represents how many days will be worked by the next person in the rotation. 
+
+ 
+
+An example of a rotation pattern could be: 2,2,3. In this case, the first person in the rotation would be on call 2 days, the following person in the rotation would be on call 2 days, and the next person would be on call 3 days, and then the pattern repeats.
+
+ 
+
+Below is an example scenario:
+
+ 
+
+The group of mechanics is composed of 4 people: [Max, Paula, Roger, Daniela]
+
+ 
+
+The rotation pattern assigned to them is a 2,2,3 rotation pattern.
+
+ 
+
+This means that in the first week, Max is on call for the first 2 days, followed by Paula on call for 2 days and then Roger on call for 3 days. 
+
+The second week starts with Daniela on call for 2 days, then Max for 2 days, Paula for 3 days
+
+The third week starts with Roger on call for 2 days, then Daniela for 2 days and Max for 3 days
+
+The fourth week starts with Paula on call 2 days, then Roger 2 days and Daniela 3 days.
+
+ 
+
+After 4 weeks (28 days), the cycle repeats and all of the team members would have been on call the same amount of days. 
+
+
+*/
+
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+ 
+
+ function whoIsOnCall (pStartDate, pDate, pPattern, pGroup) {
+    let dayOff = '0';
+    let numberDays = pPattern.reduce((total,currentN)=>total+currentN,0)
+    if(numberDays != 7 ) return "Invalid Pattern, the patterns add is no equal to the number of days of the week";
+    if(pGroup.length <= pPattern.length) return "The number of the people must be higher than the number of shifts";
+    if(pStartDate.getTime() > pDate.getTime())return "The date that you are quering is lower than the start Date";
+    let  pGroupsTurns = {}
+    let weeksNumber = 4;
+    for(let week = 1; week <= weeksNumber; week++){
+        var lastWeek = week-1;
+        pGroupsTurns[week] = {};
+        for(let i = 0; i < pGroup.length; i++){
+            let personsTurn = i +1;
+            let person = pGroup[i];
+            let turn = 0;
+            if(week === 1 ){ 
+                pGroupsTurns[week][person] = personsTurn > pPattern.length ? 0 : personsTurn
+            }else{
+                pGroupsTurns[week][person] = pGroupsTurns[lastWeek][person]+ 1 >  pPattern.length ? 0 : pGroupsTurns[lastWeek][person]+ 1;
+            }
+            turn = pGroupsTurns[week][person];
+            pGroupsTurns[week][turn] = person;
+        }
+    }
+    let currentDay = new Date(pStartDate.toString());
+    let daysWeek = 0;
+    let currentWeek = 1;
+    currentDay.setDate(currentDay.getDate()-1);// star a day before 
+    while(currentDay.getTime() != pDate.getTime()){
+        currentDay.setDate(currentDay.getDate()+1);
+        if(daysWeek === 7){
+            daysWeek = 0;
+            currentWeek+=1;
+        }
+        daysWeek++;
+    }
+    let numDaysCurrentWeek = 0;
+    for(let index in pGroupsTurns[currentWeek]){
+        if(index === dayOff || isNaN(parseInt(index))) continue;
+        let positionInPatter = parseInt(index)-1
+        numDaysCurrentWeek += pPattern[positionInPatter];
+        if(numDaysCurrentWeek >= daysWeek){ 
+            return pGroupsTurns[currentWeek][index];
+        }
+    }
+ }
+
+
+ 
+
+  //Main program - do no modify
+
+ 
+
+ let vStartDate = new Date(2021, 7, 16);
+
+ 
+
+ //myPattern variable is a dynamic variable. We will be testing
+
+ //different rotation patterns. Your code should be generic and should
+
+ //be able to handle any rotation pattern passed in
+
+ 
+
+ let myPattern = [2, 2, 3];
+
+ 
+
+ 
+
+ //myGroup variable is a dynamic variable. We will be testing
+
+ //different groups, with variable group size. Your code should be generic 
+
+ //and should be able to handle any group passed in
+
+ 
+
+ let myGroup = ['Max','Paula','Roger','Daniela'];
+
+ 
+
+ let vTestDateArr = [new Date(2021, 7, 16),new Date(2021, 7, 23), new Date(2021, 7, 28),new Date(2021, 8, 8),new Date(2021, 8, 12)];
+
+ 
+ for (let i = 0; i < vTestDateArr.length; i++){
+
+ 
+
+        const onCallName = whoIsOnCall(vStartDate, vTestDateArr[i], myPattern, myGroup);
+
+ 
+         
+        console.log(vTestDateArr[i].toLocaleDateString('en-US') + ' On call: ' + onCallName);
+
+ 
+
+ }
