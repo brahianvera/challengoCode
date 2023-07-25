@@ -1,3 +1,4 @@
+// USING GIT FLOW FROM A FEATURE BRANCH
 function pairElement(str) {
   let DNAPair = {
     "T":"A",
